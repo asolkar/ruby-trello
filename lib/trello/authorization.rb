@@ -72,6 +72,9 @@ module Trello
         def authorize(request)
           new.authorize(request)
         end
+        def consumer(options = {})
+          new.consumer(options)
+        end
       end
 
       attr_accessor :attributes
@@ -116,6 +119,14 @@ module Trello
       def oauth_token; token.key; end
       def oauth_token_secret; token.secret; end
 
+      def consumer(options = {})
+        @consumer ||= OAuth::Consumer.new(
+          consumer_credential.key,
+          consumer_credential.secret,
+          consumer_params(options)
+        )
+      end
+
       private
 
       def build_consumer_credential
@@ -143,14 +154,6 @@ module Trello
           :authorize_path     => "https://trello.com/1/OAuthAuthorizeToken",
           :access_token_path  => "https://trello.com/1/OAuthGetAccessToken"
         }.merge!(params)
-      end
-
-      def consumer(options = {})
-        @consumer ||= OAuth::Consumer.new(
-          consumer_credential.key,
-          consumer_credential.secret,
-          consumer_params(options)
-        )
       end
 
       def get_auth_header(url, verb, options = {})
